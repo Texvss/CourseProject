@@ -2,19 +2,17 @@
 #include <iostream>
 #include <Eigen/Dense>
 
-NonLinearLayer::NonLinearLayer(const ActivationFunction& activationFunction) : activationFunction(activationFunction) {}
+NonLinearLayer::NonLinearLayer(ActivationFunction&& activateF) : activateF_(std::move(activateF)) {}
 
 MatrixXd NonLinearLayer::forward(const MatrixXd& input)
 {
     this->inputStore = input;
     MatrixXd output;
-    output = activationFunction.forward(input);
+    output = input.unaryExpr([this](double x) {return activateF_.activationFn_(x); });
     return output;
 }
 
 MatrixXd NonLinearLayer::backward(const MatrixXd& gradOutput)
 {
-    MatrixXd gradInput;
-    gradInput = activationFunction.backward(this->inputStore, gradOutput);
-    return gradInput;
+    return inputStore.unaryExpr([this](double x) { return activateF_.derivativeFn_(x); }).cwiseProduct(gradOutput);
 }

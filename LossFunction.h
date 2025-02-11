@@ -9,10 +9,10 @@ using Eigen::VectorXd;
 class LossFunction
 {
     private:
-        std::function<double(const MatrixXd&, const MatrixXd&)> lossFn;
-        std::function<MatrixXd(const MatrixXd&, const MatrixXd&)> gradFn;
+        std::function<double(const MatrixXd&, const MatrixXd&)> lossFn_;
+        std::function<MatrixXd(const MatrixXd&, const MatrixXd&)> gradFn_;
     public:
-        LossFunction(std::function<double(const MatrixXd&, const MatrixXd&)> lossFn, std::function<MatrixXd(const MatrixXd&, const MatrixXd&)> gradFn);
+        LossFunction(std::function<double(const MatrixXd&, const MatrixXd&)>&& lossFn, std::function<MatrixXd(const MatrixXd&, const MatrixXd&)>&& gradFn);
         static LossFunction MSE();
         double computeLoss(const MatrixXd& predictions, const MatrixXd& actualOut);
         MatrixXd computeGrad(const MatrixXd& predictions, const MatrixXd& actualOut);

@@ -6,6 +6,10 @@
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
+
+enum InputSize : int {};
+enum OutputSize : int {};
+
 class LinearLayer
 {
     private:
@@ -13,13 +17,12 @@ class LinearLayer
         VectorXd biases; // вектор смещений
         MatrixXd gradWeights; // используется для обновления весов
         VectorXd gradBiases; // используется для оюновления смещений
-        int inputSize; // размер входа
-        int outputSize; // размер выхода
+        InputSize x_; // размер входа
+        OutputSize y_; // размер выхода
         MatrixXd lastInput;
-        double learningSpeed = 0.01;
+        // double learningSpeed = 0.01;
     public:
-        LinearLayer(int _inputSize, int _outputSize);
-        ~LinearLayer();
+        LinearLayer(InputSize x, OutputSize y);
         VectorXd forward(const VectorXd& input); // метод для прямого прохода, вычисление output'а
         VectorXd backward(const VectorXd& gradOutput); // метод для обратного проход, вычисдение градиента output'ов
         // void updateParametrs(double learningSpeed);

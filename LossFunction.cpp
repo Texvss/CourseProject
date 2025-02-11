@@ -1,6 +1,6 @@
 #include "LossFunction.h"
 
-LossFunction::LossFunction(std::function<double(const MatrixXd&, const MatrixXd&)> lossFn, std::function<MatrixXd(const MatrixXd&, const MatrixXd&)> gradFn) : lossFn(lossFn), gradFn(gradFn) {}
+LossFunction::LossFunction(std::function<double(const MatrixXd&, const MatrixXd&)>&& lossFn, std::function<MatrixXd(const MatrixXd&, const MatrixXd&)>&& gradFn) : lossFn_(std::move(lossFn)), gradFn_(std::move(gradFn)) {}
 
 
 LossFunction LossFunction::MSE()

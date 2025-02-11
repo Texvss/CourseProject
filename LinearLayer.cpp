@@ -1,24 +1,16 @@
-#include <iostream>
 #include <Eigen/Dense>
 #include "LinearLayer.h"
 
-LinearLayer::LinearLayer(int _inputSize, int _outputSize) : inputSize(_inputSize), outputSize(_outputSize) 
+LinearLayer::LinearLayer(InputSize x, OutputSize y) : x_(x), y_(y) 
 {
-    weights = MatrixXd::Random(outputSize, inputSize) * sqrt(2.0 / inputSize);;
-    biases = VectorXd::Zero(outputSize);
-    lastInput = MatrixXd::Zero(inputSize, 1);
-    gradWeights = MatrixXd::Zero(outputSize,inputSize);
-    gradBiases = VectorXd::Zero(outputSize);
+    weights = MatrixXd::Random(y, x) * sqrt(2.0 / x);;
+    biases = VectorXd::Zero(y);
+    lastInput = MatrixXd::Zero(x, 1);
+    gradWeights = MatrixXd::Zero(y,x);
+    gradBiases = VectorXd::Zero(y);
 }
-
-LinearLayer::~LinearLayer() {}
-
 VectorXd LinearLayer::forward(const VectorXd& input)
 {
-    if (input.size() != inputSize)
-    {
-        throw std::invalid_argument("Разный размер");
-    }
     this->lastInput = input;
     VectorXd output = weights * input + biases;
     
@@ -28,10 +20,6 @@ VectorXd LinearLayer::forward(const VectorXd& input)
 
 VectorXd LinearLayer::backward(const VectorXd& gradOutput)
 {
-    if (gradOutput.size() != outputSize)
-    {
-        throw std::invalid_argument("Разный размер");
-    }
     VectorXd gradInput = weights.transpose() * gradOutput;
 
     gradWeights = gradOutput * lastInput.transpose();

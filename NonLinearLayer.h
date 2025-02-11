@@ -9,11 +9,11 @@ using Eigen::VectorXd;
 class NonLinearLayer
 {
     private:
-        ActivationFunction activationFunction;
+        ActivationFunction activateF_;
         MatrixXd inputStore;
         
     public:
-        NonLinearLayer(const ActivationFunction& activationFunction);
+        NonLinearLayer(ActivationFunction&& activateF);
         MatrixXd forward(const MatrixXd& input);
         MatrixXd backward(const MatrixXd& gradOutput);
 };

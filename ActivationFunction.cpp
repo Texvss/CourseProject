@@ -2,17 +2,18 @@
 #include <functional>
 #include <cmath>
 
-ActivationFunction::ActivationFunction(std::function<double(double)> activationFn, std::function<double(double)> derivativeFn) : activationFn(activationFn), derivativeFn(derivativeFn) {}
+ActivationFunction::ActivationFunction(std::function<double(double)>&& activationFn, std::function<double(double)>&& derivativeFn) : 
+            activationFn_(std::move(activationFn)), derivativeFn_(std::move(derivativeFn)) {}
 
-MatrixXd ActivationFunction::forward(const MatrixXd& input)
-{
-    return input.unaryExpr([this](double x) {return activationFn(x);});
-}
+// MatrixXd ActivationFunction::forward(const MatrixXd& input)
+// {
+//     return input.unaryExpr([this](double x) {return activationFn(x);});
+// }
 
-MatrixXd ActivationFunction::backward(const MatrixXd& input, const MatrixXd& gradOutput)
-{
-    return input.unaryExpr([this](double x) {return derivativeFn(x);}).cwiseProduct(gradOutput);
-}
+// MatrixXd ActivationFunction::backward(const MatrixXd& input, const MatrixXd& gradOutput)
+// {
+//     return input.unaryExpr([this](double x) {return derivativeFn(x);}).cwiseProduct(gradOutput);
+// }
 
 ActivationFunction ActivationFunction::ReLU()
 {

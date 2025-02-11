@@ -76,6 +76,9 @@
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
+enum InputSize : int;
+enum OutputSize : int;
+
 int main() {
     MatrixXd inputs(2, 3);
     inputs << 1.0, 2.0, 3.0,
@@ -85,7 +88,7 @@ int main() {
     targets << 1.0, 0.0,
                0.0, 1.0;
 
-    LinearLayer linearLayer(3, 2);
+    LinearLayer linearLayer(InputSize (3), OutputSize (2));
 
     NonLinearLayer nonLinearLayer(ActivationFunction::ReLU());
 
