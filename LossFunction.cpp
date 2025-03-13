@@ -1,31 +1,36 @@
 #include "LossFunction.h"
 
-LossFunction::LossFunction(std::function<double(const MatrixXd&, const MatrixXd&)>&& lossFn, std::function<MatrixXd(const MatrixXd&, const MatrixXd&)>&& gradFn) : lossFn_(std::move(lossFn)), gradFn_(std::move(gradFn)) {}
+#include <cassert>
 
+#include "neunet.h"
 
-LossFunction LossFunction::MSE()
-{
+namespace NeuralNetwork {
+LossFunction::LossFunction(LossFunc&& lossFn, GradFunc&& gradFn)
+    : lossFn_(std::move(lossFn)), gradFn_(std::move(gradFn)) {
+}
+
+LossFunction LossFunction::MSE() {
     return LossFunction(
-        [] (const MatrixXd& predictions, const MatrixXd& actualOutput) 
-        {
-            MatrixXd difference = actualOutput - predictions;
+        [](const Matrix& predictions, const Matrix& actualOutput) {
+            Matrix difference = actualOutput - predictions;
             return difference.array().square().mean();
         },
-        [] (const MatrixXd& predictions, const MatrixXd& actualOutput) 
-        {
-            MatrixXd difference = actualOutput - predictions;
-            return 2.0 * difference / predictions.size();          
-        }
-    );
+        [](const Matrix& predictions, const Matrix& actualOutput) {
+            Matrix difference = actualOutput - predictions;
+            return 2.0 * (predictions - actualOutput) /
+                   (predictions.rows() * predictions.cols());
+        });
 }
 
-
-double LossFunction::computeLoss(const MatrixXd& predictions, const MatrixXd& actualOut)
-{
-    return (actualOut - predictions).array().square().mean();
+double LossFunction::computeLoss(const Matrix& predictions,
+                                 const Matrix& actualOut) {
+    assert(lossFn_);
+    return lossFn_(predictions, actualOut);
 }
 
-MatrixXd LossFunction::computeGrad(const MatrixXd& predictions, const MatrixXd& actualOut)
-{
-    return 2.0 * (predictions - actualOut) / predictions.size();
+Matrix LossFunction::computeGrad(const Matrix& predictions,
+                                 const Matrix& actualOut) {
+    assert(gradFn_);
+    return gradFn_(predictions, actualOut);
 }
+}  // namespace NeuralNetwork

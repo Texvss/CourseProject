@@ -1,6 +1,11 @@
 BasedOnStyle: Google
 IndentWidth: 4
-TabWidth: 4
-UseTab: Never
-ColumnLimit: 80
+AccessModifierOffset: -4
+AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+DerivePointerAlignment: true
+SpacesInParentheses: false
+KeepEmptyLinesAtTheStartOfBlocks: true
+SortIncludes: CaseInsensitive
+InsertNewlineAtEOF: true

@@ -1,36 +1,31 @@
-#include <Eigen/Dense>
 #include "LinearLayer.h"
 
-LinearLayer::LinearLayer(InputSize x, OutputSize y) : x_(x), y_(y) 
-{
-    weights = MatrixXd::Random(y, x) * sqrt(2.0 / x);;
-    biases = VectorXd::Zero(y);
-    lastInput = MatrixXd::Zero(x, 1);
-    gradWeights = MatrixXd::Zero(y,x);
-    gradBiases = VectorXd::Zero(y);
+namespace NeuralNetwork {
+LinearLayer::LinearLayer(Input x, Output y)
+    : weights_(Matrix::Random(y, x) * sqrt(2.0 / x)),
+      biases_(Vector::Random(y) * sqrt(2.0 / y)) {
 }
-VectorXd LinearLayer::forward(const VectorXd& input)
-{
-    this->lastInput = input;
-    VectorXd output = weights * input + biases;
-    
+
+Matrix LinearLayer::forward(const Matrix& input) {
+    if (cache_) {
+        cache_->input = input;
+    }
+    Matrix output = (weights_ * input).colwise() + biases_;
     return output;
 }
 
-
-VectorXd LinearLayer::backward(const VectorXd& gradOutput)
-{
-    VectorXd gradInput = weights.transpose() * gradOutput;
-
-    gradWeights = gradOutput * lastInput.transpose();
-    gradBiases = gradOutput;
-
+Matrix LinearLayer::backward(const Vector& gradOutput, double learningSpeed) {
+    if (!cache_) {
+        throw std::runtime_error(
+            "Ошибка: cache_ путстой, но backward() вызван!");
+    }
+    const Matrix input = cache_->input;
+    Vector gradInput = weights_.transpose() * gradOutput;
+    Matrix gradWeights_ = gradOutput * input.transpose();
+    Vector gradBiases_ = gradOutput.rowwise().sum();
+    ;
+    weights_ -= learningSpeed * gradWeights_;
+    biases_ -= learningSpeed * gradBiases_;
     return gradInput;
 }
-
-
-// void LinearLayer::updateParametrs(double learningSpeed)
-// {
-//     weights = weights - learningSpeed * gradWeights;
-//     biases = biases - learningSpeed * gradBiases;
-// }
+}  // namespace NeuralNetwork

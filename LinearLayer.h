@@ -1,32 +1,34 @@
 #ifndef LINEAR_LAYER_H
 #define LINEAR_LAYER_H
 
-#include <Eigen/Dense>
+#include "neunet.h"
 
-using Eigen::MatrixXd;
-using Eigen::VectorXd;
+namespace NeuralNetwork {
+enum Input : Index;
+enum Output : Index;
 
+class LinearLayer {
+public:
+    struct Cache {
+        Matrix input;
+    };
 
-enum InputSize : int {};
-enum OutputSize : int {};
+    void turn_on_learning_mod() {
+        cache_ = std::make_unique<Cache>();
+    }
 
-class LinearLayer
-{
-    private:
-        MatrixXd weights; // матрица весов
-        VectorXd biases; // вектор смещений
-        MatrixXd gradWeights; // используется для обновления весов
-        VectorXd gradBiases; // используется для оюновления смещений
-        InputSize x_; // размер входа
-        OutputSize y_; // размер выхода
-        MatrixXd lastInput;
-        // double learningSpeed = 0.01;
-    public:
-        LinearLayer(InputSize x, OutputSize y);
-        VectorXd forward(const VectorXd& input); // метод для прямого прохода, вычисление output'а
-        VectorXd backward(const VectorXd& gradOutput); // метод для обратного проход, вычисдение градиента output'ов
-        // void updateParametrs(double learningSpeed);
+    void turn_off_learning_mod() {
+        cache_.reset();
+    }
+
+    LinearLayer(Input x, Output y);
+    Matrix forward(const Matrix& input);
+    Matrix backward(const Vector& gradOutput, double learningSpeed);
+
+private:
+    Matrix weights_;
+    Vector biases_;
+    std::unique_ptr<Cache> cache_;
 };
-
-
+}  // namespace NeuralNetwork
 #endif

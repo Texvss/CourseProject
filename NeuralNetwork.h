@@ -3,22 +3,23 @@
 
 #include <vector>
 
+// Этот класс был создан в начале работы над курсовым проектом, я просто по
+// гайду пытался понять, как все должно работать. Поэтому здесь было много
+// разной фигни. По факту этот класс не нужен, на момент его создания, я даже не
+// знал про Eigen.
 
-class NeuralNetwork
-{
-  private:
-    double W; // weight
-    double b; // по сути это просто смещение
+class NeuralNetwork {
+private:
+    double W;
+    double b;
     double learningSpeed = 0.01;
-  public:
-    NeuralNetwork(double _W, double _b, double _learningSpeed);
-    ~NeuralNetwork();
-    
-    void Paramets(); // в самом начале нужно что-то присвоить W и b для этого и нужен этот метод
-    double Forward(double number); // этот метод будет вычислять предсказание
-    double Error(double predicted, double actual); // этот метод нужен для вычисления погрешности
-    void Train(std::vector<double> inputsX, std::vector<double> outPutsY); // метод для обучения
-    std::vector<double> Predict(std::vector<double> inputsX); // метод для использования обученной модели
+
+public:
+    NeuralNetwork(double W_, double b_, double learningSpeed_);
+    double Forward(double number);
+    double Error(double predicted, double actual);
+    void Train(std::vector<double> inputsX, std::vector<double> outPutsY);
+    std::vector<double> Predict(std::vector<double> inputsX);
 };
 
 #endif

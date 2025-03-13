@@ -2,20 +2,22 @@
 #define NON_LINEAR_LAYER_H
 
 #include "ActivationFunction.h"
+#include "neunet.h"
 
-using Eigen::MatrixXd;
-using Eigen::VectorXd;
+namespace NeuralNetwork {
+class NonLinearLayer {
+public:
+    struct Cache {
+        Matrix input;
+    };
+    NonLinearLayer(ActivationFunction&& activateF);
+    Matrix forward(const Matrix& input);
+    Matrix backward(const Matrix& gradOutput);
 
-class NonLinearLayer
-{
-    private:
-        ActivationFunction activateF_;
-        MatrixXd inputStore;
-        
-    public:
-        NonLinearLayer(ActivationFunction&& activateF);
-        MatrixXd forward(const MatrixXd& input);
-        MatrixXd backward(const MatrixXd& gradOutput);
+private:
+    std::unique_ptr<Cache> cache_;
+    ActivationFunction activateF_;
+    Matrix inputStore_;
 };
-
+}  // namespace NeuralNetwork
 #endif

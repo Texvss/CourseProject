@@ -1,21 +1,25 @@
 #ifndef LOSS_FUNCTION_H
 #define LOSS_FUNCTION_H
-
-#include <Eigen/Dense>
 #include <functional>
-using Eigen::MatrixXd;
-using Eigen::VectorXd;
 
-class LossFunction
-{
-    private:
-        std::function<double(const MatrixXd&, const MatrixXd&)> lossFn_;
-        std::function<MatrixXd(const MatrixXd&, const MatrixXd&)> gradFn_;
-    public:
-        LossFunction(std::function<double(const MatrixXd&, const MatrixXd&)>&& lossFn, std::function<MatrixXd(const MatrixXd&, const MatrixXd&)>&& gradFn);
-        static LossFunction MSE();
-        double computeLoss(const MatrixXd& predictions, const MatrixXd& actualOut);
-        MatrixXd computeGrad(const MatrixXd& predictions, const MatrixXd& actualOut);
+#include "neunet.h"
+
+namespace NeuralNetwork {
+using LossSignature = double(const Matrix&, const Matrix&);
+using GradSignature = Matrix(const Matrix&, const Matrix&);
+using LossFunc = std::function<LossSignature>;
+using GradFunc = std::function<GradSignature>;
+
+class LossFunction {
+private:
+    std::function<double(const Matrix&, const Matrix&)> lossFn_;
+    std::function<Matrix(const Matrix&, const Matrix&)> gradFn_;
+
+public:
+    LossFunction(LossFunc&& lossFn, GradFunc&& gradFn);
+    static LossFunction MSE();
+    double computeLoss(const Matrix& predictions, const Matrix& actualOut);
+    Matrix computeGrad(const Matrix& predictions, const Matrix& actualOut);
 };
-
+}  // namespace NeuralNetwork
 #endif
