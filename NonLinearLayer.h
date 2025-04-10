@@ -5,11 +5,20 @@
 #include "neunet.h"
 
 namespace NeuralNetwork {
+    
 class NonLinearLayer {
 public:
     struct Cache {
         Matrix input;
     };
+
+    void turn_on_learning_mod() {
+        cache_ = std::make_unique<Cache>();
+    }
+
+    void turn_off_learning_mod() {
+        cache_.reset();
+    }
     NonLinearLayer(ActivationFunction&& activateF);
     Matrix forward(const Matrix& input);
     Matrix backward(const Matrix& gradOutput);

@@ -16,6 +16,8 @@ set(SOURCES
     ActivationFunction.cpp
     NonLinearLayer.cpp
     LossFunction.cpp
+    Random.cpp
+    Test.cpp
 )
 
 add_executable(CourseProject ${SOURCES})

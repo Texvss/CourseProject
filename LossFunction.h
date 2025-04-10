@@ -1,10 +1,10 @@
 #ifndef LOSS_FUNCTION_H
 #define LOSS_FUNCTION_H
 #include <functional>
-
 #include "neunet.h"
 
 namespace NeuralNetwork {
+
 using LossSignature = double(const Matrix&, const Matrix&);
 using GradSignature = Matrix(const Matrix&, const Matrix&);
 using LossFunc = std::function<LossSignature>;

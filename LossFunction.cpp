@@ -1,10 +1,8 @@
 #include "LossFunction.h"
-
 #include <cassert>
 
-#include "neunet.h"
-
 namespace NeuralNetwork {
+
 LossFunction::LossFunction(LossFunc&& lossFn, GradFunc&& gradFn)
     : lossFn_(std::move(lossFn)), gradFn_(std::move(gradFn)) {
 }

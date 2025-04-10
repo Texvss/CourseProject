@@ -1,14 +1,16 @@
 #include "Random.h"
-
 #include <EigenRand/EigenRand>
 
 namespace NeuralNetwork {
-Random::Random(int seed) : generator_(seed) {
-}
+
+Random::Random(int seed) : generator_(seed) {}
 
 Matrix Random::uniformMatrix(Index rows, Index cols, double a, double b) {
-    Eigen::ArrayXXd randMat =
-        Eigen::Rand::uniformReal<Eigen::ArrayXXd>(rows, cols, generator_, a, b);
-    return randMat.matrix();
+        return Eigen::Rand::uniformReal<Matrix>(rows, cols, generator_, a, b);
+}
+
+Vector Random::uniformVector(Index rows, double a, double b){
+    Matrix result = Eigen::Rand::uniformReal<Matrix>(rows, 1, generator_, a, b);
+    return result.col(0);
 }
 }  // namespace NeuralNetwork

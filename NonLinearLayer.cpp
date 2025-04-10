@@ -1,27 +1,27 @@
 #include "NonLinearLayer.h"
-
 #include "neunet.h"
+#include <iostream>
 
 namespace NeuralNetwork {
+
 NonLinearLayer::NonLinearLayer(ActivationFunction&& activateF)
     : activateF_(std::move(activateF)) {
 }
 
 Matrix NonLinearLayer::forward(const Matrix& input) {
-    if (cache_) {
-        cache_->input = input;
+    if (!cache_) {
+        cache_ = std::make_unique<Cache>();
     }
-    this->inputStore_ = input;
+    cache_->input = input;
     return activateF_.evaluate0(input);
 }
 
 Matrix NonLinearLayer::backward(const Matrix& gradOutput) {
-    Matrix input;
     if (!cache_) {
         throw std::runtime_error(
             "Ошибка: cache_ путстой, но backward() вызван!");
     }
-    cache_->input = input;
-    return activateF_.evaluate1(input).cwiseProduct(gradOutput);
+    Matrix& input = cache_->input;
+    return activateF_.evaluate1(cache_->input).cwiseProduct(gradOutput);
 }
 }  // namespace NeuralNetwork

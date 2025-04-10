@@ -2,16 +2,19 @@
 #define RANDOM_H
 
 #include "neunet.h"
+#include <EigenRand/EigenRand>
 
 namespace NeuralNetwork {
+    
 class Random {
 private:
-    statatic constexpr int k_default_seed_ = 42;
-    std::mt19937 generator_{k_default_seed};
+    static constexpr int k_default_seed_ = 42345;
+    std::mt19937 generator_{k_default_seed_};
 
 public:
-    Random();
+    Random(int seed);
     Matrix uniformMatrix(Index rows, Index cols, double a, double b);
+    Vector uniformVector(Index rows, double a, double b);
 };
 }  // namespace NeuralNetwork
 #endif

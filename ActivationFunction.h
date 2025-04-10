@@ -5,6 +5,7 @@
 #include "neunet.h"
 
 namespace NeuralNetwork {
+    
 class ActivationFunction {
 private:
     using Function = std::function<double(double)>;
@@ -22,7 +23,7 @@ public:
     Matrix backward(const Matrix& input, const Matrix& gradOutput);
     static ActivationFunction ReLU();
     static ActivationFunction Sigmoid();
-    static ActivationFunction LeakyReLU();
+    static ActivationFunction LeakyReLU(double alpha);
 };
 }  // namespace NeuralNetwork
 #endif
