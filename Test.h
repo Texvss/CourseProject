@@ -7,10 +7,13 @@
 #include "LossFunction.h"
 #include "neunet.h"
 #include "NonLinearLayer.h"
+#include "SGDOptimizer.h"
 
 namespace NeuralNetwork
 {
     void test1();
+    void testSGD();
+    void testTrain();
 } // namespace NeuralNetwork
 
 #endif

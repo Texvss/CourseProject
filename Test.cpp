@@ -1,4 +1,5 @@
 #include "Test.h"
+#include "Random.h"
 
 namespace NeuralNetwork{
 
@@ -46,4 +47,51 @@ namespace NeuralNetwork{
     }
     std::cout << "Градиент после линейного слоя:\n" << gradLinear << '\n';
     }
+
+    void testSGD() {
+        std::cout << "=== testSGD() ===\n";
+        Matrix grad(2,2);
+        grad << 1.0, 2.0,
+                3.0, 4.0;
+
+        SGDOptimizer opt(0.5);
+        Matrix update = opt.update(grad);
+        std::cout << "Исходный градиент:\n" << grad << "\n\n";
+        std::cout << "SGD update (η=0.5):\n" << update << "\n\n";
+    }
+    void testTrain() {
+        std::cout << "=== testTrain() Linear Regression ===\n";
+
+        Matrix inputs(1, 4);
+        inputs << 1.0, 2.0, 3.0, 4.0;
+        Matrix targets(1, 4);
+        targets << 3.0, 5.0, 7.0, 9.0;
+
+        // 2) Создаём слой, оптимизатор и функцию потерь
+        Random rnd(42);
+        LinearLayer layer(X(1), Y(1), rnd);
+        SGDOptimizer opt(0.1);
+        LossFunction loss = LossFunction::MSE();
+
+        const int epochs = 150;
+        for (int epoch = 1; epoch <= epochs; ++epoch) {
+            Matrix pred = layer.forward(inputs);
+            double L = loss.computeLoss(pred, targets);
+
+            Matrix gradLoss = loss.computeGrad(pred, targets);
+            layer.backward(gradLoss, /*learningSpeed=*/0.1);
+
+            if (epoch % 20 == 0) {
+                std::cout << "Epoch " << epoch
+                          << " Loss=" << L << '\n';
+            }
+        }
+
+        Matrix finalPred = layer.forward(inputs);
+        std::cout << "\nAfter training, predictions:\n"
+                  << finalPred << "\n";
+        std::cout << "True targets:\n" << targets << "\n";
+    }
+
+
 } // namespace 

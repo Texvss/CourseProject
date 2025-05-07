@@ -3,6 +3,8 @@
 using namespace NeuralNetwork;
 
 int main() {
-    test1();
+    // test1();
+    // testSGD();
+    testTrain();
     return 0;
 }

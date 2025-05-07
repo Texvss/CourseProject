@@ -25,7 +25,6 @@ Matrix LinearLayer::backward(const Matrix& gradOutput, double learningSpeed) {
     Matrix gradInput = weights_.transpose() * gradOutput;
     Matrix gradWeights_ = gradOutput * input.transpose();
     Vector gradBiases_ = gradOutput.rowwise().sum();
-    ;
     weights_ -= learningSpeed * gradWeights_;
     biases_ -= learningSpeed * gradBiases_;
     return gradInput;
