@@ -10,14 +10,18 @@ set(EIGENRAND_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/EigenRand)
 include_directories(${EIGEN3_INCLUDE_DIR} ${EIGENRAND_INCLUDE_DIR})
 
 set(SOURCES
-    main.cpp
-    NeuralNetwork.cpp
-    LinearLayer.cpp
     ActivationFunction.cpp
-    NonLinearLayer.cpp
+    Adam.cpp
+    DataLoader.cpp
+    LinearLayer.cpp
     LossFunction.cpp
+    main.cpp
+    MNISTLoader.cpp
+    NeuralNetwork.cpp
+    NonLinearLayer.cpp
     Random.cpp
     Test.cpp
-)
+    Train.cpp
+    )
 
 add_executable(CourseProject ${SOURCES})

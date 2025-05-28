@@ -13,8 +13,10 @@ private:
 
 public:
     Random(int seed);
+    std::mt19937& engine();
     Matrix uniformMatrix(Index rows, Index cols, double a, double b);
     Vector uniformVector(Index rows, double a, double b);
 };
 }  // namespace NeuralNetwork
 #endif
+

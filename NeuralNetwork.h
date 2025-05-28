@@ -1,23 +1,32 @@
-// #ifndef NEURAL_NETWORK_H
-// #define NEURAL_NETWORK_H
+#ifndef NEURAL_NETWORK_H
+#define NEURAL_NETWORK_H
 
-// #include <vector>
+#include "neunet.h"
+#include <vector>
+#include "AnyLayer.h"
+#include "LossFunction.h"
+#include "Adam.h"
+#include <utility>
 
-// // Этот класс был создан в начале работы над курсовым проектом, я просто по
-// // гайду пытался понять, как все должно работать. Поэтому здесь было много
-// // разной фигни. По факту этот класс не нужен, на момент его создания, я даже не
-// // знал про Eigen.
+namespace NeuralNetwork
+{
+    class NeuralNetwork {
+        private:
+            std::vector<CAnyLayer> layers_;
+        public:
+            NeuralNetwork() = default;
+            template<typename LayerT, typename... Args>
+            void addLayer(Args&&... args) {
+                layers_.emplace_back(
+                    std::in_place_type<LayerT>,
+                    std::forward<Args>(args)...
+                );
+        }
+            Matrix forward(const Matrix& X);
+            Matrix backward(const Matrix& gradOutput, double learningRate);
+            void updateParams(Adam& optimizer);
+    };
 
-// class NeuralNetwork {
-// private:
-//     double W;
-//     double b;
-// public:
-//     NeuralNetwork(double W_, double b_, double learningSpeed_);
-//     double Forward(double number);
-//     double Error(double predicted, double actual);
-//     void Train(std::vector<double> inputsX, std::vector<double> outPutsY);
-//     std::vector<double> Predict(std::vector<double> inputsX);
-// };
+} // namespace  
 
-// #endif
+#endif

@@ -2,64 +2,79 @@
 #define ANYLAYER_H
 
 #include "neunet.h"
+#include <memory>
+#include <type_traits>
 
 namespace NeuralNetwork {
 
-    template<class TBase>
-    class ILayerInterface : public TBase {
+    class ILayerInterface {
     public:
-        virtual Matrix forward(const Matrix&) = 0;
-        virtual Matrix backward(const Matrix&, double) = 0;
+        virtual ~ILayerInterface() = default;
+        virtual Matrix forward(const Matrix& input) = 0;
+        virtual Matrix backward(const Matrix& gradOutput, double learningSpeed) = 0;
         virtual void turn_on_learning_mod() = 0;
         virtual void turn_off_learning_mod() = 0;
-        virtual ~ILayerInterface() = default;
     };
-    
-    template<class TBase, class TLayer>
-    class CLayerImpl : public TBase {
-        using CBase = TBase;
+
+    template <typename LayerT>
+    class LayerHolder : public ILayerInterface {
     public:
-        using CBase::CBase;
-    
+        template <typename... Args>
+        explicit LayerHolder(Args&&... args)
+            : layer_(std::forward<Args>(args)...) {}
+
         Matrix forward(const Matrix& input) override {
-            return this->Object().forward(input);
+            return layer_.forward(input);
         }
-    
+
         Matrix backward(const Matrix& gradOutput, double learningSpeed) override {
-            return this->Object().backward(gradOutput, learningSpeed);
+            // Если у слоя есть backward с learningSpeed
+            if constexpr (std::is_invocable_v<decltype(&LayerT::backward), LayerT, const Matrix&, double>) {
+                return layer_.backward(gradOutput, learningSpeed);
+            } else {
+                return layer_.backward(gradOutput);
+            }
         }
-    
+
         void turn_on_learning_mod() override {
-            this->Object().turn_on_learning_mod();
+            layer_.turn_on_learning_mod();
         }
-    
+
         void turn_off_learning_mod() override {
-            this->Object().turn_off_learning_mod();
+            layer_.turn_off_learning_mod();
         }
+
+    private:
+        LayerT layer_;
     };
-    
-    class CAnyLayer : public NSLibrary::CAnyMovable<ILayerInterface, CLayerImpl> {
-        using CBase = NSLibrary::CAnyMovable<ILayerInterface, CLayerImpl>;
+
+    // Универсальный слой с type-erasure
+    class CAnyLayer {
     public:
-        using CBase::CBase;
-    
+        template <typename LayerT, typename... Args>
+        explicit CAnyLayer(std::in_place_type_t<LayerT>, Args&&... args)
+            : ptr_(std::make_unique<LayerHolder<LayerT>>(std::forward<Args>(args)...)) {}
+
         Matrix forward(const Matrix& input) {
-            return operator->()->forward(input);
+            return ptr_->forward(input);
         }
-    
+
         Matrix backward(const Matrix& gradOutput, double learningSpeed) {
-            return operator->()->backward(gradOutput, learningSpeed);
+            return ptr_->backward(gradOutput, learningSpeed);
         }
-    
+
         void turn_on_learning_mod() {
-            operator->()->turn_on_learning_mod();
+            ptr_->turn_on_learning_mod();
         }
-    
+
         void turn_off_learning_mod() {
-            operator->()->turn_off_learning_mod();
+            ptr_->turn_off_learning_mod();
         }
+
+    private:
+        std::unique_ptr<ILayerInterface> ptr_;
     };
-    
+
 } // namespace NeuralNetwork
 
-#endif
+#endif // ANYLAYER_H

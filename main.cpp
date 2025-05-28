@@ -5,6 +5,7 @@ using namespace NeuralNetwork;
 int main() {
     // test1();
     // testSGD();
-    testTrain();
+    // testTrain();
+    globalTest();
     return 0;
 }

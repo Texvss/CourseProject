@@ -13,4 +13,8 @@ Vector Random::uniformVector(Index rows, double a, double b){
     Matrix result = Eigen::Rand::uniformReal<Matrix>(rows, 1, generator_, a, b);
     return result.col(0);
 }
+
+std::mt19937& Random::engine() {
+    return generator_;
+}
 }  // namespace NeuralNetwork

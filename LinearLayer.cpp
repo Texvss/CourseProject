@@ -3,9 +3,8 @@
 
 namespace NeuralNetwork {
 
-LinearLayer::LinearLayer(X x, Y y, Random& rnd)
-    : weights_(initializeMatrix(x, y, rnd)),
-      biases_(initializeVector(x, rnd)) {}
+LinearLayer::LinearLayer(X x, Y y, Random& rnd) : weights_(initializeMatrix(static_cast<Index>(y), static_cast<Index>(x), rnd)), 
+    biases_(initializeVector(static_cast<Index>(y), rnd)) {}
 
 Matrix LinearLayer::forward(const Matrix& input) {
     if (!cache_) {

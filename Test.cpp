@@ -1,5 +1,6 @@
 #include "Test.h"
 #include "Random.h"
+#include <utility>
 
 namespace NeuralNetwork{
 
@@ -67,13 +68,12 @@ namespace NeuralNetwork{
         Matrix targets(1, 4);
         targets << 3.0, 5.0, 7.0, 9.0;
 
-        // 2) Создаём слой, оптимизатор и функцию потерь
         Random rnd(42);
         LinearLayer layer(X(1), Y(1), rnd);
         SGDOptimizer opt(0.1);
         LossFunction loss = LossFunction::MSE();
 
-        const int epochs = 150;
+        const int epochs = 1000;
         for (int epoch = 1; epoch <= epochs; ++epoch) {
             Matrix pred = layer.forward(inputs);
             double L = loss.computeLoss(pred, targets);
@@ -93,5 +93,69 @@ namespace NeuralNetwork{
         std::cout << "True targets:\n" << targets << "\n";
     }
 
+    int globalTest() {
+        std::vector<Matrix> trainImages;
+        std::vector<Vector> trainLabels;
+        std::vector<Matrix> testImages;
+        std::vector<Vector> testLabels;
 
-} // namespace 
+        if (!MNISTLoader::load("/Users/mansur/Desktop/CourseProject/data/train-images-idx3-ubyte", 
+                           "/Users/mansur/Desktop/CourseProject/data/train-labels-idx1-ubyte", 
+                           trainImages, trainLabels) ||
+        !MNISTLoader::load("/Users/mansur/Desktop/CourseProject/data/t10k-images-idx3-ubyte", 
+                           "/Users/mansur/Desktop/CourseProject/data/t10k-labels-idx1-ubyte", 
+                           testImages, testLabels)) {
+            std::cerr << "Failed to load MNIST data" << std::endl;
+            return -1;
+    }
+
+        Random rnd(42345);
+        DataLoader trainLoader(trainImages, trainLabels, /*batchSize=*/64, rnd);
+        DataLoader testLoader(testImages,  testLabels,  /*batchSize=*/64, rnd);
+
+        NeuralNetwork model;
+        model.addLayer<LinearLayer>(X(784), Y(128), rnd);
+        model.addLayer<NonLinearLayer>(ActivationFunction::ReLU());
+        model.addLayer<LinearLayer>(X(128), Y(10), rnd);
+
+        LossFunction loss = LossFunction::MSE();
+        Train trainer(model, loss, /*lr=*/0.01);
+        trainer.fit(trainLoader, /*epochs=*/10, /*shuffle=*/true);
+
+        double sumLoss = 0.0;
+        int correct = 0;
+        int total = 0;
+
+        while (testLoader.isNext()) {
+            Batch batch = testLoader.nextBatch();
+
+            Matrix X(batch.inputs[0].rows(), batch.inputs.size());
+            for (size_t i = 0; i < batch.inputs.size(); ++i) {
+                X.col(i) = batch.inputs[i];
+            }
+
+            Matrix preds = model.forward(X);
+            sumLoss += loss.computeLoss(preds,
+                                    [&](){
+                                        Matrix Y(batch.targets[0].size(), batch.targets.size());
+                                        for (size_t i = 0; i < batch.targets.size(); ++i)
+                                            Y.col(i) = batch.targets[i];
+                                        return Y;
+                                    }());
+
+            for (int i = 0; i < preds.cols(); ++i) {
+                int p; preds.col(i).maxCoeff(&p);
+                int t; batch.targets[i].maxCoeff(&t);
+                if (p == t) ++correct;
+                ++total;
+            }
+    }
+
+    std::cout << "Test Loss: " << (sumLoss / (total / 64))
+              << ", Accuracy: " << (100.0 * correct / total) << "%" << std::endl;
+
+    return 0;
+    }
+
+
+} // namespace Test
