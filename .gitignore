@@ -16,5 +16,5 @@ Makefile
 cmake_install.cmake
 
 .DS_Store
-data/*-images-idx3-ubyte
-data/*-labels-idx1-ubyte
+# data/*-images-idx3-ubyte
+# data/*-labels-idx1-ubyte
