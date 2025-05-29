@@ -99,11 +99,11 @@ namespace NeuralNetwork{
         std::vector<Matrix> testImages;
         std::vector<Vector> testLabels;
 
-        if (!MNISTLoader::load("/Users/mansur/Desktop/CourseProject/data/train-images-idx3-ubyte", 
-                           "/Users/mansur/Desktop/CourseProject/data/train-labels-idx1-ubyte", 
+        if (!MNISTLoader::load("../data/train-images-idx3-ubyte", 
+                           "../data/train-labels-idx1-ubyte", 
                            trainImages, trainLabels) ||
-        !MNISTLoader::load("/Users/mansur/Desktop/CourseProject/data/t10k-images-idx3-ubyte", 
-                           "/Users/mansur/Desktop/CourseProject/data/t10k-labels-idx1-ubyte", 
+        !MNISTLoader::load("../data/t10k-images-idx3-ubyte", 
+                           "../data/t10k-labels-idx1-ubyte", 
                            testImages, testLabels)) {
             std::cerr << "Failed to load MNIST data" << std::endl;
             return -1;
