@@ -16,5 +16,4 @@ public:
 };
 
 } // namespace NeuralNetwork
-
 #endif

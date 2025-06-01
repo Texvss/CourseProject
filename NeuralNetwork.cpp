@@ -10,11 +10,14 @@ namespace NeuralNetwork
         return out;
     }
 
-    Matrix NeuralNetwork::backward(const Matrix& gradOutput, double learningRate) {
-        Matrix grad = gradOutput;
-        for (auto it = layers_.rbegin(); it != layers_.rend(); ++it) {
-            grad = it->backward(grad, learningRate);
-        }
-        return grad;
+    Matrix NeuralNetwork::backward(const Matrix& gradOutput, Optimizer& optimizer, double learningRate) {
+    Matrix grad = gradOutput;
+    size_t layerIndex = 0;
+    for (auto it = layers_.rbegin(); it != layers_.rend(); ++it) {
+        grad = it->computeGradients(grad);
+        it->applyParameterUpdate(optimizer, learningRate, layerIndex);
+        ++layerIndex;
+    }
+    return grad;
     }
 } // namespace NeuralNetwork

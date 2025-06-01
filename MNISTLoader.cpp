@@ -51,5 +51,4 @@ bool MNISTLoader::load(const std::string& imageFile,
 
     return true;
 }
-
 } // namespace NeuralNetwork

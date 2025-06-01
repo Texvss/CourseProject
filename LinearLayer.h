@@ -25,7 +25,12 @@ public:
 
     LinearLayer(X x, Y y, Random& rnd = globalRandom());
     Matrix forward(const Matrix& input);
-    Matrix backward(const Matrix& gradOutput, double learningSpeed);
+    Matrix computeGradients(const Matrix& gradOutput);
+    std::tuple<Matrix, Matrix, Vector> computeGradientsWithParams(const Matrix& gradOutput);
+    Matrix& getWeight();
+    const Matrix& getWeight() const;
+    Vector& getBias();
+    const Vector& getBias() const;
 
 private:
     Matrix weights_;

@@ -5,7 +5,6 @@
 #include <vector>
 #include "AnyLayer.h"
 #include "LossFunction.h"
-#include "Adam.h"
 #include <utility>
 
 namespace NeuralNetwork
@@ -23,10 +22,9 @@ namespace NeuralNetwork
                 );
         }
             Matrix forward(const Matrix& X);
-            Matrix backward(const Matrix& gradOutput, double learningRate);
-            void updateParams(Adam& optimizer);
+            Matrix backward(const Matrix& gradOutput, Optimizer& opt, double learningRate);
     };
 
-} // namespace  
+} // namespace  NeuralNetwork
 
 #endif

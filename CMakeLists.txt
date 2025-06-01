@@ -11,7 +11,6 @@ include_directories(${EIGEN3_INCLUDE_DIR} ${EIGENRAND_INCLUDE_DIR})
 
 set(SOURCES
     ActivationFunction.cpp
-    Adam.cpp
     DataLoader.cpp
     LinearLayer.cpp
     LossFunction.cpp
@@ -19,6 +18,7 @@ set(SOURCES
     MNISTLoader.cpp
     NeuralNetwork.cpp
     NonLinearLayer.cpp
+    Optimizer.cpp
     Random.cpp
     Test.cpp
     Train.cpp

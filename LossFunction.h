@@ -12,12 +12,13 @@ using GradFunc = std::function<GradSignature>;
 
 class LossFunction {
 private:
-    std::function<double(const Matrix&, const Matrix&)> lossFn_;
-    std::function<Matrix(const Matrix&, const Matrix&)> gradFn_;
+    LossFunc lossFn_;
+    GradFunc gradFn_;
 
 public:
     LossFunction(LossFunc&& lossFn, GradFunc&& gradFn);
     static LossFunction MSE();
+    static LossFunction CrossEntropy();
     double computeLoss(const Matrix& predictions, const Matrix& actualOut);
     Matrix computeGrad(const Matrix& predictions, const Matrix& actualOut);
 };

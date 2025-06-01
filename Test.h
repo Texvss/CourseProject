@@ -10,16 +10,12 @@
 #include "DataLoader.h"
 #include "Train.h"
 #include "MNISTLoader.h"
-#include "SGDOptimizer.h"
 #include <iostream>
 #include <cassert>
 #include <utility>
 
 namespace NeuralNetwork
 {
-    void test1();
-    void testSGD();
-    void testTrain();
     int globalTest();
 } // namespace NeuralNetwork
 

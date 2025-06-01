@@ -21,8 +21,8 @@ public:
     }
     NonLinearLayer(ActivationFunction&& activateF);
     Matrix forward(const Matrix& input);
-    Matrix backward(const Matrix& gradOutput);
-
+    // Matrix backward(const Matrix& gradOutput);
+    Matrix computeGradients(const Matrix& gradOutput);
 private:
     std::unique_ptr<Cache> cache_;
     ActivationFunction activateF_;

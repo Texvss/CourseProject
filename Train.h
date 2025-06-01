@@ -7,6 +7,7 @@
 #include "DataLoader.h"
 #include "LossFunction.h"
 #include "neunet.h"
+#include "Optimizer.h"
 
 namespace NeuralNetwork
 {
@@ -15,10 +16,11 @@ namespace NeuralNetwork
     private:
             NeuralNetwork& model_;
             LossFunction& loss_;
-            double learningRate_;
+            Optimizer& optimizer_;
+            double learningRate_;          
             double trainStep(const Batch& batch);
     public:
-        Train(NeuralNetwork& model, LossFunction& loss, double learningRate);
+        Train(NeuralNetwork& model, LossFunction& loss, Optimizer& optimizer, double learningRate);
         void fit(DataLoader& loader, int epochs, bool shuffle = true);
     };
     
