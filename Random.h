@@ -1,11 +1,12 @@
-#ifndef RANDOM_H
-#define RANDOM_H
+#pragma once
+
+#include <EigenRand/EigenRand>
+#include <iterator>
 
 #include "neunet.h"
-#include <EigenRand/EigenRand>
 
 namespace NeuralNetwork {
-    
+
 class Random {
 private:
     static constexpr int k_default_seed_ = 42345;
@@ -13,10 +14,12 @@ private:
 
 public:
     Random(int seed);
-    std::mt19937& engine();
+
+    template <typename Iterator>
+    void shuffle(Iterator begin, Iterator end) {
+        std::shuffle(begin, end, generator_);
+    }
     Matrix uniformMatrix(Index rows, Index cols, double a, double b);
     Vector uniformVector(Index rows, double a, double b);
 };
 }  // namespace NeuralNetwork
-#endif
-

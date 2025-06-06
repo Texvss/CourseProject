@@ -1,22 +1,25 @@
-#ifndef TEST_H
-#define TEST_H
+#pragma once
 
-#include "Random.h"
-#include "NeuralNetwork.h"
-#include "LinearLayer.h"
-#include "NonLinearLayer.h"
-#include "ActivationFunction.h"
-#include "LossFunction.h"
+#include "Adam.h"
 #include "DataLoader.h"
+#include "LossFunction.h"
+#include "NeuralNetwork.h"
+#include "SGD.h"
 #include "Train.h"
-#include "MNISTLoader.h"
-#include <iostream>
-#include <cassert>
-#include <utility>
 
-namespace NeuralNetwork
-{
-    int globalTest();
-} // namespace NeuralNetwork
+namespace NeuralNetwork {
 
-#endif
+struct Stats {
+    double trainLoss;
+    double testAccuracy;
+};
+
+Stats trainModelAlgo1(NeuralNetwork& model, DataLoader& trainLoader,
+                      DataLoader& testLoader);
+void printStats(const Stats& stats);
+void globalTest();
+void run_all_tests();
+void testDataLoader();
+void testNeuralNetwork();
+
+}  // namespace NeuralNetwork

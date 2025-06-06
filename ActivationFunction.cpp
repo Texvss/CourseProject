@@ -1,9 +1,9 @@
 #include "ActivationFunction.h"
+
 #include <cmath>
 
-
 namespace NeuralNetwork {
-    
+
 ActivationFunction::ActivationFunction(Function&& activationFn,
                                        Function&& derivativeFn)
     : activationFn_(std::move(activationFn)),
@@ -52,8 +52,7 @@ ActivationFunction ActivationFunction::Sigmoid() {
 }
 
 ActivationFunction ActivationFunction::LeakyReLU(double alpha) {
-    return ActivationFunction(
-        [=](double x) { return x > 0 ? x : alpha * x; },
-        [=](double x) { return x > 0 ? 1.0 : alpha; });
+    return ActivationFunction([=](double x) { return x > 0 ? x : alpha * x; },
+                              [=](double x) { return x > 0 ? 1.0 : alpha; });
 }
 }  // namespace NeuralNetwork

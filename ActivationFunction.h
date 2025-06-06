@@ -1,11 +1,11 @@
-#ifndef ACTIVATION_FUNCTION_H
-#define ACTIVATION_FUNCTION_H
+#pragma once
+
 #include <functional>
 
 #include "neunet.h"
 
 namespace NeuralNetwork {
-    
+
 class ActivationFunction {
 private:
     using Function = std::function<double(double)>;
@@ -15,6 +15,7 @@ private:
 
 public:
     ActivationFunction(Function&& activationFn, Function&& derivativeFn);
+
     Matrix forward(const Matrix& input);
     Matrix evaluate0(const Matrix& arg) const;
     Matrix evaluate1(const Matrix& arg) const;
@@ -25,5 +26,5 @@ public:
     static ActivationFunction Sigmoid();
     static ActivationFunction LeakyReLU(double alpha);
 };
+
 }  // namespace NeuralNetwork
-#endif

@@ -1,45 +1,63 @@
-#ifndef OPTIMIZER_H
-#define OPTIMIZER_H
+#pragma once
 
+#include <memory>
+
+#include "Adam.h"
 #include "neunet.h"
-#include <functional>
-#include <vector>
+#include "SGD.h"
 
 namespace NeuralNetwork {
 
-struct Momentum {
-    Matrix M;
-    Vector V;
+namespace detail {
+
+class IOptimizerInterface {
+public:
+    virtual ~IOptimizerInterface() = default;
+    virtual void update(Matrix& params, const Matrix& grad) = 0;
+    virtual void update(Vector& params, const Vector& grad) = 0;
 };
 
-class Optimizer {
+template <typename OptT>
+class OptimizerHolder final : public IOptimizerInterface {
 public:
-    using VectorUpdateFunc = std::function<void(Optimizer*, Vector&, const Vector&, double, size_t)>;
-    using MatrixUpdateFunc = std::function<void(Optimizer*, Matrix&, const Matrix&, double, size_t)>;
+    explicit OptimizerHolder(OptT opt) : opt_(std::move(opt)) {
+    }
 
-    Optimizer(
-        VectorUpdateFunc&& vectorUpdateFn,
-        MatrixUpdateFunc&& matrixUpdateFn,
-        double learningRate
-    );
+    void update(Matrix& params, const Matrix& grad) override {
+        opt_.update(params, grad);
+    }
 
-    static Optimizer SGD(double learningRate);
-    static Optimizer Adam(double learningRate, double beta1 = 0.9, double beta2 = 0.999, double epsilon = 1e-8);
-
-    void update(Vector& params, const Vector& grad, size_t index, double learningRate);
-    void update(Matrix& params, const Matrix& grad, size_t index, double learningRate);
+    void update(Vector& params, const Vector& grad) override {
+        opt_.update(params, grad);
+    }
 
 private:
-    VectorUpdateFunc vectorUpdateFn_;
-    MatrixUpdateFunc matrixUpdateFn_;
-    double learningRate_;
-    double beta1_;
-    double beta2_;
-    double epsilon_;
-    size_t t_;
-    std::vector<Momentum> moments_;
+    OptT opt_;
 };
 
-} // namespace NeuralNetwork
+}  // namespace detail
 
-#endif
+class Optimizer {
+private:
+    std::unique_ptr<detail::IOptimizerInterface> ptr_;
+
+public:
+    explicit Optimizer(SGD sgd)
+        : ptr_(std::make_unique<detail::OptimizerHolder<SGD>>(std::move(sgd))) {
+    }
+
+    explicit Optimizer(Adam adam)
+        : ptr_(std::make_unique<detail::OptimizerHolder<Adam>>(
+              std::move(adam))) {
+    }
+
+    void update(Matrix& params, const Matrix& grad) {
+        ptr_->update(params, grad);
+    }
+
+    void update(Vector& params, const Vector& grad) {
+        ptr_->update(params, grad);
+    }
+};
+
+}  // namespace NeuralNetwork
