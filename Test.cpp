@@ -14,7 +14,7 @@ Stats trainModelAlgo1(NeuralNetwork& model, DataLoader& trainLoader,
     double learningRate = 0.01;
     int epochs = 10;
     Train trainer(lossFunc, std::move(opt), learningRate);
-    std::cout << "Обучение на " << epochs << " эпохах...\n";
+    std::cout << "Training for " << epochs << " epochs...\n";
     trainer.fit(model, trainLoader, testLoader, static_cast<Epoches>(epochs),
                 Shuffle::Enable);
 
@@ -41,19 +41,19 @@ Stats trainModelAlgo1(NeuralNetwork& model, DataLoader& trainLoader,
 }
 
 void printStats(const Stats& stats) {
-    std::cout << "Тестовые потери: " << std::fixed << std::setprecision(6)
-              << stats.trainLoss << ", Точность: " << std::setprecision(2)
+    std::cout << "Test loss: " << std::fixed << std::setprecision(6)
+              << stats.trainLoss << ", Accuracy: " << std::setprecision(2)
               << stats.testAccuracy << "%\n";
 }
 
 void globalTest() {
-    std::cout << "Запуск глобального теста...\n";
+    std::cout << "Running global test...\n";
     Random rnd(42345);
 
-    const std::filesystem::path trainImages = "../data/train-images.idx3-ubyte";
-    const std::filesystem::path trainLabels = "../data/train-labels.idx1-ubyte";
-    const std::filesystem::path testImages = "../data/t10k-images.idx3-ubyte";
-    const std::filesystem::path testLabels = "../data/t10k-labels.idx1-ubyte";
+    const std::filesystem::path trainImages = "../data/train-images-idx3-ubyte";
+    const std::filesystem::path trainLabels = "../data/train-labels-idx1-ubyte";
+    const std::filesystem::path testImages = "../data/t10k-images-idx3-ubyte";
+    const std::filesystem::path testLabels = "../data/t10k-labels-idx1-ubyte";
 
     assert(std::filesystem::exists(trainImages));
     assert(std::filesystem::exists(trainLabels));
@@ -67,8 +67,8 @@ void globalTest() {
         DataLoader::makeMnistLoader(testImages, testLabels, 64, rnd);
     assert(testLoader.has_value());
 
-    std::cout << "Загружено " << trainLoader->reset() << " обучающих и "
-              << testLoader->reset() << " тестовых образцов\n";
+    std::cout << "Loaded " << trainLoader->reset() << " training and "
+              << testLoader->reset() << " test samples\n";
 
     NeuralNetwork model = NeuralNetwork::makeModel1(rnd);
 
@@ -81,7 +81,7 @@ void globalTest() {
     Optimizer opt = Optimizer(Adam(0.001, 0.9, 0.999, 1e-8));
     double learningRate = 0.001;
     Train trainer(lossFunc, std::move(opt), learningRate);
-    std::cout << "Обучение на 10 эпохах с Adam...\n";
+    std::cout << "Training for 10 epochs with Adam...\n";
     trainer.fit(model, *trainLoader, *testLoader, static_cast<Epoches>(10),
                 Shuffle::Enable);
 
@@ -109,19 +109,19 @@ void globalTest() {
     printStats(statsAdam);
 
     assert(statsSGD.testAccuracy >= 80.0 || statsAdam.testAccuracy >= 80.0);
-    std::cout << "Глобальный тест пройден\n";
+    std::cout << "Global test passed\n";
 }
 
 void run_all_tests() {
-    std::cout << "Запуск всех тестов...\n";
+    std::cout << "Running all tests...\n";
     testDataLoader();
     testNeuralNetwork();
     globalTest();
-    std::cout << "Все тесты пройдены!\n";
+    std::cout << "All tests passed!\n";
 }
 
 void testDataLoader() {
-    std::cout << "Тестирование DataLoader...\n";
+    std::cout << "Testing DataLoader...\n";
     Random rnd(42);
     const std::filesystem::path trainImages = "../data/train-images-idx3-ubyte";
     const std::filesystem::path trainLabels = "../data/train-labels-idx1-ubyte";
@@ -153,11 +153,11 @@ void testDataLoader() {
         "invalid-images.idx3-ubyte", "invalid-labels.idx1-ubyte", 64, rnd);
     assert(!invalidLoader.has_value());
 
-    std::cout << "Тесты DataLoader пройдены\n";
+    std::cout << "DataLoader tests passed\n";
 }
 
 void testNeuralNetwork() {
-    std::cout << "Тестирование NeuralNetwork...\n";
+    std::cout << "Testing NeuralNetwork...\n";
     Random rnd(42);
     NeuralNetwork model = NeuralNetwork::makeModel1(rnd);
 
@@ -172,7 +172,7 @@ void testNeuralNetwork() {
     Matrix gradInput = model.backward(gradOutput, opt, 0.01);
     assert(gradInput.rows() == 784 && gradInput.cols() == 2);
 
-    std::cout << "Тесты NeuralNetwork пройдены\n";
+    std::cout << "NeuralNetwork tests passed\n";
 }
 
 }  // namespace NeuralNetwork

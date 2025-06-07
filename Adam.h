@@ -17,8 +17,8 @@ private:
     double epsilon_;
     double beta1_t_;
     double beta2_t_;
-    std::vector<Momentum> moments_;
-    size_t t_;
+    std::unordered_map<void*, Momentum> moments_;
+    std::unordered_map<void*, size_t> t_;
 
 public:
     Adam(double alpha, double beta1, double beta2, double epsilon);

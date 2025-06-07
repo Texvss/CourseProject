@@ -1,7 +1,6 @@
 #include "LinearLayer.h"
 
 #include <cassert>
-#include <iostream>
 
 namespace NeuralNetwork {
 
@@ -53,13 +52,6 @@ Matrix LinearLayer::backward(const Matrix& gradOutput, Optimizer& opt,
     auto gradW = gradOutput * X.transpose();
     auto gradB = gradOutput.rowwise().sum();
     Matrix gradInput = weights_.transpose() * gradOutput;
-
-    std::cout << "weights_: " << weights_.rows() << "x" << weights_.cols()
-              << std::endl;
-    std::cout << "gradW: " << gradW.rows() << "x" << gradW.cols() << std::endl;
-    std::cout << "biases_: " << biases_.rows() << "x" << biases_.cols()
-              << std::endl;
-    std::cout << "gradB: " << gradB.rows() << "x" << gradB.cols() << std::endl;
 
     opt.update(weights_, gradW);
     opt.update(biases_, gradB);
