@@ -11,7 +11,7 @@ namespace detail {
 class ILayerInterface {
 public:
     virtual ~ILayerInterface() = default;
-    virtual Matrix forward(const Matrix& input) = 0;
+    virtual Matrix forward(const Matrix&& input) = 0;
     virtual Matrix backward(const Matrix& gradOutput, Optimizer& opt,
                             double learningRate) = 0;
     virtual void turn_on_learning_mod() = 0;
@@ -28,8 +28,8 @@ public:
     explicit LayerHolder(Args&&... args) : layer_(std::forward<Args>(args)...) {
     }
 
-    Matrix forward(const Matrix& input) override {
-        return layer_.forward(input);
+    Matrix forward(const Matrix&& input) override {
+        return layer_.forward(std::move(input));
     }
 
     Matrix backward(const Matrix& gradOutput, Optimizer& opt,
@@ -56,8 +56,8 @@ public:
     explicit LayerHolder(Args&&... args) : layer_(std::forward<Args>(args)...) {
     }
 
-    Matrix forward(const Matrix& input) override {
-        return layer_.forward(input);
+    Matrix forward(const Matrix&& input) override {
+        return layer_.forward(std::move(input));
     }
 
     Matrix backward(const Matrix& gradOutput, Optimizer&, double) override {
@@ -86,8 +86,8 @@ public:
               std::forward<Args>(args)...)) {
     }
 
-    Matrix forward(const Matrix& input) {
-        return ptr_->forward(input);
+    Matrix forward(const Matrix&& input) {
+        return ptr_->forward(std::move(input));
     }
 
     Matrix backward(const Matrix& gradOutput, Optimizer& opt,

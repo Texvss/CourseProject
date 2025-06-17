@@ -7,6 +7,37 @@
 
 namespace NeuralNetwork {
 
+NeuralNetwork makeModel1(Random rnd) {
+    NeuralNetwork model;
+    model.addLayer<LinearLayer>(In(784), Out(256), rnd);
+    model.addLayer<NonLinearLayer>(ActivationFunction::ReLU());
+    model.addLayer<LinearLayer>(In(256), Out(128), rnd);
+    model.addLayer<NonLinearLayer>(ActivationFunction::LeakyReLU(0.05));
+    model.addLayer<LinearLayer>(In(128), Out(10), rnd);
+    model.addLayer<NonLinearLayer>(ActivationFunction::LeakyReLU(0.05));
+    return model;
+}
+
+NeuralNetwork makeModel2(Random rnd) {
+    NeuralNetwork model;
+    model.addLayer<LinearLayer>(In(784), Out(128), rnd);
+    model.addLayer<NonLinearLayer>(ActivationFunction::ReLU());
+    model.addLayer<LinearLayer>(In(128), Out(10), rnd);
+    model.addLayer<NonLinearLayer>(ActivationFunction::LeakyReLU(0.05));
+    return model;
+}
+
+NeuralNetwork makeModel3(Random rnd) {
+    NeuralNetwork model;
+    model.addLayer<LinearLayer>(In(784), Out(512), rnd);
+    model.addLayer<NonLinearLayer>(ActivationFunction::LeakyReLU(0.01));
+    model.addLayer<LinearLayer>(In(512), Out(64), rnd);
+    model.addLayer<NonLinearLayer>(ActivationFunction::Sigmoid());
+    model.addLayer<LinearLayer>(In(64), Out(10), rnd);
+    model.addLayer<NonLinearLayer>(ActivationFunction::ReLU());
+    return model;
+}
+
 Stats trainModelAlgo1(NeuralNetwork& model, DataLoader& trainLoader,
                       DataLoader& testLoader) {
     LossFunction lossFunc = LossFunction::CrossEntropy();
@@ -21,11 +52,11 @@ Stats trainModelAlgo1(NeuralNetwork& model, DataLoader& trainLoader,
     double totalLoss = 0.0;
     int correct = 0;
     int total = 0;
-    testLoader.reset();
+    testLoader.rewind();
     while (testLoader.hasNext()) {
         auto batch = testLoader.nextBatch();
         total += batch.X.cols();
-        Matrix preds = model.forward(batch.X);
+        Matrix preds = model.forward(std::move(batch.X));
         totalLoss += lossFunc.computeLoss(preds, batch.Y) * batch.X.cols();
         for (int i = 0; i < preds.cols(); ++i) {
             Index predLabel;
@@ -67,16 +98,17 @@ void globalTest() {
         DataLoader::makeMnistLoader(testImages, testLabels, 64, rnd);
     assert(testLoader.has_value());
 
-    std::cout << "Loaded " << trainLoader->reset() << " training and "
-              << testLoader->reset() << " test samples\n";
+    std::cout << "Loaded " << trainLoader->rewind() << " training and "
+              << testLoader->rewind() << " test samples\n";
 
-    NeuralNetwork model = NeuralNetwork::makeModel1(rnd);
+    NeuralNetwork model = makeModel1(rnd);
+    // NeuralNetwork model = makeModel2(rnd);
+    // NeuralNetwork model = makeModel3(rnd);
 
     auto statsSGD = trainModelAlgo1(model, *trainLoader, *testLoader);
     std::cout << "SGD: ";
     printStats(statsSGD);
 
-    model = NeuralNetwork::makeModel1(rnd);
     LossFunction lossFunc = LossFunction::CrossEntropy();
     Optimizer opt = Optimizer(Adam(0.001, 0.9, 0.999, 1e-8));
     double learningRate = 0.001;
@@ -88,11 +120,11 @@ void globalTest() {
     double totalLoss = 0.0;
     int correct = 0;
     int total = 0;
-    testLoader->reset();
+    testLoader->rewind();
     while (testLoader->hasNext()) {
         auto batch = testLoader->nextBatch();
         total += batch.X.cols();
-        Matrix preds = model.forward(batch.X);
+        Matrix preds = model.forward(std::move(batch.X));
         totalLoss += lossFunc.computeLoss(preds, batch.Y) * batch.X.cols();
         for (int i = 0; i < preds.cols(); ++i) {
             Index predLabel;
@@ -142,7 +174,7 @@ void testDataLoader() {
     assert(batch.Y.rows() == 10);
 
     size_t totalSamples = 0;
-    trainLoader->reset();
+    trainLoader->rewind();
     while (trainLoader->hasNext()) {
         auto b = trainLoader->nextBatch();
         totalSamples += b.X.cols();
@@ -159,11 +191,13 @@ void testDataLoader() {
 void testNeuralNetwork() {
     std::cout << "Testing NeuralNetwork...\n";
     Random rnd(42);
-    NeuralNetwork model = NeuralNetwork::makeModel1(rnd);
+    NeuralNetwork model = makeModel1(rnd);
+    // NeuralNetwork model = makeModel2(rnd);
+    // NeuralNetwork model = makeModel3(rnd);
 
     Matrix X(784, 2);
     X.setRandom();
-    Matrix Y = model.forward(X);
+    Matrix Y = model.forward(std::move(X));
     assert(Y.rows() == 10 && Y.cols() == 2);
 
     Matrix gradOutput(10, 2);

@@ -33,11 +33,11 @@ void LinearLayer::turn_off_learning_mod() {
     cache_.reset();
 }
 
-Matrix LinearLayer::forward(const Matrix& input) {
+Matrix LinearLayer::forward(const Matrix&& input) {
     if (!cache_) {
         cache_ = std::make_unique<Cache>();
     }
-    cache_->input = input;
+    cache_->input = std::move(input);
     assert(biases_.rows() == (weights_ * input).rows());
     return (weights_ * input).colwise() + biases_;
 }

@@ -7,7 +7,7 @@
 namespace NeuralNetwork {
 
 DataLoader::DataLoader(std::vector<Matrix>&& data, std::vector<Vector>&& labels,
-                       size_t batchSize, Random& rnd)
+                       size_t batchSize, Random rnd)
     : data_(std::move(data)),
       labels_(std::move(labels)),
       batchSize_(batchSize),
@@ -30,7 +30,7 @@ size_t DataLoader::shuffle() {
     return data_.size();
 }
 
-size_t DataLoader::reset() {
+size_t DataLoader::rewind() {
     currentPosition_ = 0;
     return data_.size();
 }

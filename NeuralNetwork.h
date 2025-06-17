@@ -21,12 +21,9 @@ public:
         layers_.emplace_back(std::in_place_type<LayerT>,
                              std::forward<Args>(args)...);
     }
-    Matrix forward(const Matrix& X);
+    Matrix forward(const Matrix&& X);
     Matrix backward(const Matrix& gradOutput, Optimizer& opt,
                     double learningRate);
-    static NeuralNetwork makeModel1(Random& rnd);
-    static NeuralNetwork makeModel2(Random& rnd);
-    static NeuralNetwork makeModel3(Random& rnd);
 };
 
 }  // namespace  NeuralNetwork

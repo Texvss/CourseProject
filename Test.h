@@ -14,8 +14,13 @@ struct Stats {
     double testAccuracy;
 };
 
+static NeuralNetwork makeModel1(Random rnd);
+static NeuralNetwork makeModel2(Random rnd);
+static NeuralNetwork makeModel3(Random rnd);
+
 Stats trainModelAlgo1(NeuralNetwork& model, DataLoader& trainLoader,
                       DataLoader& testLoader);
+
 void printStats(const Stats& stats);
 void globalTest();
 void run_all_tests();

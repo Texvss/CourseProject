@@ -16,11 +16,11 @@ void NonLinearLayer::turn_off_learning_mod() {
     cache_.reset();
 }
 
-Matrix NonLinearLayer::forward(const Matrix& input) {
+Matrix NonLinearLayer::forward(const Matrix&& input) {
     if (!cache_) {
         cache_ = std::make_unique<Cache>();
     }
-    cache_->input = input;
+    cache_->input = std::move(input);
     return activateF_.forward(input);
 }
 

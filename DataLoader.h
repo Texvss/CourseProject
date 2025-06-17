@@ -25,14 +25,14 @@ private:
     std::vector<size_t> indices_;
     size_t batchSize_;
     size_t currentPosition_;
-    Random& rnd_;
+    Random rnd_;
 
 public:
     DataLoader(std::vector<Matrix>&& data, std::vector<Vector>&& labels,
-               size_t batchSize, Random& rnd);
+               size_t batchSize, Random rnd);
 
     size_t shuffle();
-    size_t reset();
+    size_t rewind();
     bool hasNext() const;
     Batch nextBatch();
     static std::optional<MnistData> loadMnistData(

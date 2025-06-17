@@ -14,14 +14,16 @@ Adam::Adam(double alpha, double beta1, double beta2, double epsilon)
 }
 
 void Adam::update(Matrix& tetta, const Matrix& grad) {
-    void* param_ptr = static_cast<void*>(&tetta);
-    auto& t = t_[param_ptr];
-    auto& mom = moments_[param_ptr];
+    Matrix* paramPtr = &tetta;
 
-    if (t == 0) {
-        mom.M = Matrix::Zero(tetta.rows(), tetta.cols());
-        mom.V = Matrix::Zero(tetta.rows(), tetta.cols());
+    if (matrixT_.find(paramPtr) == matrixT_.end()) {
+        matrixT_[paramPtr] = 0;
+        matrixMoments_[paramPtr] = {Matrix::Zero(tetta.rows(), tetta.cols()),
+                                    Matrix::Zero(tetta.rows(), tetta.cols())};
     }
+
+    size_t& t = matrixT_[paramPtr];
+    MatrixMomentum& mom = matrixMoments_[paramPtr];
 
     ++t;
 
@@ -34,39 +36,35 @@ void Adam::update(Matrix& tetta, const Matrix& grad) {
     Matrix m_hat = mom.M / corr1;
     Matrix v_hat = mom.V / corr2;
 
-    tetta -=
-        alpha_ * (m_hat.array() / (v_hat.array().sqrt() + epsilon_)).matrix();
+    tetta.array() -=
+        alpha_ * (m_hat.array() / (v_hat.array().sqrt() + epsilon_));
 }
 
 void Adam::update(Vector& tetta, const Vector& grad) {
-    void* param_ptr = static_cast<void*>(&tetta);
-    auto& t = t_[param_ptr];
-    auto& mom = moments_[param_ptr];
+    Vector* paramPtr = &tetta;
 
-    Matrix tettaMat = tetta;
-    Matrix gradMat = grad;
-
-    if (t == 0) {
-        mom.M = Matrix::Zero(tettaMat.rows(), tettaMat.cols());
-        mom.V = Matrix::Zero(tettaMat.rows(), tettaMat.cols());
+    if (vectorT_.find(paramPtr) == vectorT_.end()) {
+        vectorT_[paramPtr] = 0;
+        vectorMoments_[paramPtr] = {Vector::Zero(tetta.size()),
+                                    Vector::Zero(tetta.size())};
     }
 
+    size_t& t = vectorT_[paramPtr];
+    VectorMomentum& mom = vectorMoments_[paramPtr];
     ++t;
-
-    mom.M = beta1_ * mom.M + (1 - beta1_) * gradMat;
-    mom.V = beta2_ * mom.V + (1 - beta2_) * gradMat.array().square().matrix();
+    mom.M = beta1_ * mom.M + (1 - beta1_) * grad;
+    mom.V = beta2_ * mom.V.array() + (1 - beta2_) * grad.array().square();
 
     double corr1 = 1.0 - std::pow(beta1_, t);
     double corr2 = 1.0 - std::pow(beta2_, t);
 
-    Matrix m_hat = mom.M / corr1;
-    Matrix v_hat = mom.V / corr2;
+    Vector m_hat = mom.M / corr1;
+    Vector v_hat = mom.V / corr2;
 
-    tettaMat -=
-        alpha_ * (m_hat.array() / (v_hat.array().sqrt() + epsilon_)).matrix();
+    auto denominator = v_hat.array().sqrt() + epsilon_;
 
-    for (int i = 0; i < tetta.size(); ++i) {
-        tetta[i] = tettaMat(i, 0);
-    }
+    auto update_term = (m_hat.array() / denominator).eval();
+
+    tetta.array() -= alpha_ * update_term;
 }
 }  // namespace NeuralNetwork
