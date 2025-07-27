@@ -1,0 +1,2 @@
+*.idx3-ubyte filter=lfs diff=lfs merge=lfs -text
+*.idx1-ubyte filter=lfs diff=lfs merge=lfs -text
